@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AnnotationIntent, AnnotationSeverity, generateId, truncate } from '@pinpoint/shared';
+import CoreTest from './CoreTest';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -438,6 +439,7 @@ export default function App() {
         <Counter />
         <OrdersTable />
         <ContactForm />
+        <CoreTest />
       </main>
       <Footer />
     </div>
