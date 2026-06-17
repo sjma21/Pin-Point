@@ -7,6 +7,16 @@ import { pauseAnimations, resumeAnimations } from '../core/animationController.j
 import { isPendingMarkerStatus } from '../core/annotationStatus.js';
 import { LayoutToolbar } from './layout/LayoutToolbar.js';
 
+// Inject pulse animation
+(function ensurePulse() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('__pp_pulse_anim')) return;
+  const s = document.createElement('style');
+  s.id = '__pp_pulse_anim';
+  s.textContent = '@keyframes pp-dot-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}';
+  document.head.appendChild(s);
+})();
+
 async function copyToClipboard(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard && window.isSecureContext) {
@@ -29,6 +39,12 @@ async function copyToClipboard(text: string): Promise<boolean> {
 interface Props {
   onCopy?: (md: string) => void;
 }
+
+const MODE_META = {
+  watching:    { label: 'Watching…', color: C.success,      icon: '●' },
+  critiquing:  { label: 'Critique in progress', color: C.info,    icon: '🔍' },
+  'self-driving': { label: 'Self-driving', color: C.primaryBright, icon: '🚗' },
+} as const;
 
 export function Toolbar({ onCopy }: Props) {
   const state = useToolbarState();
@@ -102,11 +118,21 @@ export function Toolbar({ onCopy }: Props) {
     setConfirmClear(false);
   }
 
+  function stopAgentMode() {
+    const stats = toolbarStore.get().agentStats;
+    toolbarStore.set({
+      agentMode: 'idle',
+      agentStats: { ...stats, selfDrivingStep: null },
+    });
+  }
+
   const pending = state.annotations.filter(a => isPendingMarkerStatus(a.status));
   const count = pending.length;
   const isCapturing = state.mode === 'capturing';
   const placementCount = state.annotations.filter(a => (a.kind as string) === 'placement').length;
   const rearrangeCount = state.annotations.filter(a => (a.kind as string) === 'rearrange').length;
+  const agentActive = state.agentMode !== 'idle';
+  const modeMeta = agentActive ? MODE_META[state.agentMode as keyof typeof MODE_META] : null;
 
   const btn = (active: boolean, hue: string): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
@@ -128,12 +154,15 @@ export function Toolbar({ onCopy }: Props) {
         zIndex: Z.toolbar,
         width: 344,
         background: C.bg,
-        border: `1px solid ${C.borderLight}`,
+        border: `1px solid ${agentActive ? (modeMeta?.color ?? C.borderLight) + '88' : C.borderLight}`,
         borderRadius: 12,
-        boxShadow: '0 4px 32px rgba(0,0,0,0.6)',
+        boxShadow: agentActive
+          ? `0 4px 32px rgba(0,0,0,0.6), 0 0 0 1px ${modeMeta?.color ?? C.primary}33`
+          : '0 4px 32px rgba(0,0,0,0.6)',
         fontFamily: FONT,
         userSelect: 'none',
         pointerEvents: 'auto',
+        transition: 'border-color 0.3s, box-shadow 0.3s',
       }}
       onClick={e => e.stopPropagation()}
     >
@@ -167,6 +196,59 @@ export function Toolbar({ onCopy }: Props) {
           ⚙
         </button>
       </div>
+
+      {/* Agent mode indicator */}
+      {agentActive && modeMeta && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '6px 12px',
+          background: `${modeMeta.color}11`,
+          borderBottom: `1px solid ${modeMeta.color}33`,
+        }}>
+          {/* Pulsing dot (watching only) */}
+          {state.agentMode === 'watching' && (
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: modeMeta.color,
+              flexShrink: 0,
+              display: 'inline-block',
+              animation: 'pp-dot-pulse 1.4s ease-in-out infinite',
+              boxShadow: `0 0 6px ${modeMeta.color}`,
+            }} />
+          )}
+          {state.agentMode !== 'watching' && (
+            <span style={{ fontSize: 13, flexShrink: 0 }}>{modeMeta.icon}</span>
+          )}
+
+          <span style={{ fontSize: 11, fontWeight: 700, color: modeMeta.color, flex: 1 }}>
+            {state.agentMode === 'watching'
+              ? `Watching… ${state.agentStats.watchProcessedCount > 0 ? `(${state.agentStats.watchProcessedCount} processed)` : ''}`
+              : state.agentMode === 'self-driving' && state.agentStats.selfDrivingTotalCount > 0
+                ? `Fixing ${state.agentStats.selfDrivingFixedCount} of ${state.agentStats.selfDrivingTotalCount}`
+                : modeMeta.label
+            }
+          </span>
+
+          {state.agentMode === 'self-driving' && state.agentStats.selfDrivingStep && (
+            <span style={{ fontSize: 10, color: modeMeta.color, opacity: 0.7, fontFamily: FONT }}>
+              {state.agentStats.selfDrivingStep}
+            </span>
+          )}
+
+          <button
+            onClick={e => { e.stopPropagation(); stopAgentMode(); }}
+            style={{
+              background: 'none', border: `1px solid ${modeMeta.color}55`,
+              borderRadius: 4, color: modeMeta.color, fontSize: 10, fontWeight: 600,
+              cursor: 'pointer', padding: '2px 7px', fontFamily: FONT,
+              flexShrink: 0,
+            }}
+            title="Stop agent mode"
+          >
+            Stop
+          </button>
+        </div>
+      )}
 
       {/* Actions row */}
       <div style={{

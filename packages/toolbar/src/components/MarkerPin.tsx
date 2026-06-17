@@ -4,6 +4,20 @@ import { C, Z, FONT } from '../theme.js';
 import { toolbarStore } from '../state/toolbarState.js';
 import { INTENT_META } from '../theme.js';
 
+// Inject animation keyframes once
+(function ensureAnimStyles() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('__pp_marker_anim')) return;
+  const s = document.createElement('style');
+  s.id = '__pp_marker_anim';
+  s.textContent =
+    '@keyframes pp-resolve{0%{transform:rotate(-45deg) scale(1);opacity:1}' +
+    '50%{transform:rotate(-45deg) scale(1.5);opacity:1}' +
+    '100%{transform:rotate(-45deg) scale(0);opacity:0}}' +
+    '@keyframes pp-pulse{0%,100%{opacity:1}50%{opacity:0.3;transform:scale(0.8)}}';
+  document.head.appendChild(s);
+})();
+
 // ─── Layout annotation markers ────────────────────────────────────────────────
 
 function PlacementMarker({ annotation, index }: { annotation: Annotation; index: number }) {
@@ -168,8 +182,8 @@ interface Props {
 
 const STATUS_STYLE: Record<string, { pinColor: string; label: string; opacity: number }> = {
   open:        { pinColor: '', label: 'Open', opacity: 1 },
-  in_progress: { pinColor: C.warning, label: 'In Progress', opacity: 1 },
-  resolved:    { pinColor: C.success, label: 'Resolved', opacity: 0.85 },
+  in_progress: { pinColor: C.warning, label: 'Acknowledged', opacity: 1 },
+  resolved:    { pinColor: C.success, label: 'Resolved', opacity: 1 },
   dismissed:   { pinColor: C.textDim, label: 'Dismissed', opacity: 0.5 },
   wont_fix:    { pinColor: C.textDim, label: "Won't Fix", opacity: 0.5 },
 };
@@ -196,6 +210,7 @@ export function MarkerPin({ annotation, index, color }: Props) {
 
   const meta = annotation.metadata as Record<string, unknown> | undefined;
   const isFixed = meta?.isFixed === true;
+  const createdByAgent = meta?.createdByAgent === true;
 
   const viewX = isFixed ? bb.x : bb.x - window.scrollX;
   const viewY = isFixed ? bb.y : bb.y - window.scrollY;
@@ -211,6 +226,8 @@ export function MarkerPin({ annotation, index, color }: Props) {
   const statusStyle = STATUS_STYLE[status] ?? STATUS_STYLE['open'];
   const pinColor = statusStyle.pinColor || color;
   const isResolved = status === 'resolved';
+  const isAcknowledged = status === 'in_progress';
+  const isQuestion = annotation.intent === 'question';
   const resolutionSummary = typeof meta2['resolutionSummary'] === 'string'
     ? meta2['resolutionSummary']
     : '';
@@ -256,6 +273,7 @@ export function MarkerPin({ annotation, index, color }: Props) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {/* Pin shape */}
       <div style={{
         width: 28,
         height: 28,
@@ -263,14 +281,17 @@ export function MarkerPin({ annotation, index, color }: Props) {
         transform: 'rotate(-45deg)',
         background: pinColor,
         border: `2px solid ${isResolved ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)'}`,
-        boxShadow: isResolved
-          ? `0 0 0 2px ${C.successFaint}, 0 2px 8px rgba(0,0,0,0.4)`
-          : '0 2px 8px rgba(0,0,0,0.4)',
+        boxShadow: isAcknowledged
+          ? `0 0 0 2px ${C.warningFaint}, 0 2px 8px rgba(0,0,0,0.4), 0 0 10px ${C.warning}66`
+          : isResolved
+            ? `0 0 0 2px ${C.successFaint}, 0 2px 8px rgba(0,0,0,0.4)`
+            : '0 2px 8px rgba(0,0,0,0.4)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         transition: 'transform 0.15s, box-shadow 0.25s, background 0.25s',
-        ...(hovered ? { transform: 'rotate(-45deg) scale(1.2)', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' } : {}),
+        ...(isResolved ? { animation: 'pp-resolve 1s ease-in-out forwards' } : {}),
+        ...(hovered && !isResolved ? { transform: 'rotate(-45deg) scale(1.2)', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' } : {}),
       }}>
         <span style={{
           transform: 'rotate(45deg)',
@@ -280,11 +301,50 @@ export function MarkerPin({ annotation, index, color }: Props) {
           fontFamily: FONT,
           lineHeight: 1,
         }}>
-          {isResolved ? '✓' : index}
+          {isResolved ? '✓' : isQuestion && hasThread ? '?' : index}
         </span>
       </div>
 
-      {hasThread && (
+      {/* Acknowledged eye indicator */}
+      {isAcknowledged && (
+        <div style={{
+          position: 'absolute',
+          top: -5,
+          right: -5,
+          width: 14,
+          height: 14,
+          borderRadius: '50%',
+          background: C.warning,
+          border: '1.5px solid #fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 8,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+        }}>
+          👁
+        </div>
+      )}
+
+      {/* Agent-created robot indicator */}
+      {createdByAgent && !isAcknowledged && !isResolved && (
+        <div style={{
+          position: 'absolute',
+          top: -5,
+          left: -5,
+          width: 14,
+          height: 14,
+          borderRadius: '50%',
+          background: C.primary,
+          border: '1.5px solid #fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 7,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
+        }}>
+          🤖
+        </div>
+      )}
+
+      {/* Thread indicator (non-question) */}
+      {hasThread && !isAcknowledged && !isResolved && !isQuestion && (
         <div style={{
           position: 'absolute',
           top: -4,
@@ -321,10 +381,18 @@ export function MarkerPin({ annotation, index, color }: Props) {
             <span style={{ color: statusStyle.pinColor || C.textMuted, marginLeft: 6 }}>
               · {statusStyle.label}
             </span>
+            {createdByAgent && (
+              <span style={{ color: C.primary, marginLeft: 6 }}>· 🤖 Agent</span>
+            )}
           </div>
           <div style={{ fontSize: 12, color: C.text, fontFamily: FONT, lineHeight: 1.5 }}>
             {annotation.comment.slice(0, 100)}{annotation.comment.length > 100 ? '…' : ''}
           </div>
+          {isAcknowledged && (
+            <div style={{ fontSize: 11, color: C.warning, fontFamily: FONT, marginTop: 6 }}>
+              👁 Claude is working on this…
+            </div>
+          )}
           {isResolved && resolutionSummary && (
             <div style={{ fontSize: 11, color: C.success, fontFamily: FONT, marginTop: 6, lineHeight: 1.4 }}>
               {resolutionSummary}

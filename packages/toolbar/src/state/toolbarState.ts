@@ -6,6 +6,15 @@ import { loadAnnotations, saveAnnotations } from '../core/storageManager.js';
 
 export type ToolbarMode = 'idle' | 'capturing' | 'area-select';
 
+export type AgentMode = 'idle' | 'watching' | 'critiquing' | 'self-driving';
+
+export interface AgentStats {
+  watchProcessedCount: number;
+  selfDrivingStep: string | null;
+  selfDrivingFixedCount: number;
+  selfDrivingTotalCount: number;
+}
+
 export interface ToolbarExtendedSettings {
   detailLevel: DetailLevel;
   showReactComponents: boolean;
@@ -43,6 +52,8 @@ export interface ToolbarStateData {
   popupConfig: PopupConfig | null;
   toolbarPosition: ToolbarPosition;
   settingsOpen: boolean;
+  agentMode: AgentMode;
+  agentStats: AgentStats;
 }
 
 const SETTINGS_KEY = 'pp_settings_v1';
@@ -107,6 +118,8 @@ class ToolbarStore {
       popupConfig: null,
       toolbarPosition: loadToolbarPosition(),
       settingsOpen: false,
+      agentMode: 'idle',
+      agentStats: { watchProcessedCount: 0, selfDrivingStep: null, selfDrivingFixedCount: 0, selfDrivingTotalCount: 0 },
     };
   }
 

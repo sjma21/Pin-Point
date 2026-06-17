@@ -401,10 +401,11 @@ export function Pinpoint({
 
       {/* Marker pins — separate numbering for feedback vs placement vs rearrange */}
       {state.markersVisible && (() => {
-        const pendingAnns = state.annotations.filter(ann => isPendingMarkerStatus(ann.status));
-        const feedbackAnns = pendingAnns.filter(a => (a.kind as string) !== 'placement' && (a.kind as string) !== 'rearrange');
-        const placementAnns = pendingAnns.filter(a => (a.kind as string) === 'placement');
-        const rearrangeAnns = pendingAnns.filter(a => (a.kind as string) === 'rearrange');
+        // Include resolved annotations briefly so the exit animation can play before deletion
+        const visibleAnns = state.annotations.filter(ann => isPendingMarkerStatus(ann.status) || ann.status === 'resolved');
+        const feedbackAnns = visibleAnns.filter(a => (a.kind as string) !== 'placement' && (a.kind as string) !== 'rearrange');
+        const placementAnns = visibleAnns.filter(a => (a.kind as string) === 'placement');
+        const rearrangeAnns = visibleAnns.filter(a => (a.kind as string) === 'rearrange');
         return (
           <>
             {feedbackAnns.map((ann, i) => (
