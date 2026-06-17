@@ -9,3 +9,5 @@ export * from './areaSelectionHandler.js';
 export * from './animationController.js';
 export * from './storageManager.js';
 export * from './markdownSerializer.js';
+export * from './httpClient.js';
+export * from './sseClient.js';

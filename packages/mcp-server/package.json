@@ -9,15 +9,17 @@
     "pinpoint-server": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsup src/cli.ts --format esm --dts",
+    "build": "tsup src/cli.ts src/index.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
-    "dev": "tsx src/cli.ts",
-    "start": "node dist/cli.js"
+    "dev": "tsx src/cli.ts server",
+    "start": "node dist/cli.js server"
   },
   "dependencies": {
+    "@hono/node-server": "^2.0.5",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "@pinpoint/shared": "workspace:*",
-    "hono": "^4.4.2"
+    "hono": "^4.4.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",

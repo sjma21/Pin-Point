@@ -6,6 +6,8 @@ import { toolbarStore } from '../state/toolbarState.js';
 import { useToolbarState } from '../state/useToolbarState.js';
 import { serializeAnnotations } from '../core/markdownSerializer.js';
 import { pauseAnimations, resumeAnimations } from '../core/animationController.js';
+import { httpClient } from '../core/httpClient.js';
+import { sseClient } from '../core/sseClient.js';
 import { Toolbar } from './Toolbar.js';
 import { AnnotationPopup } from './AnnotationPopup.js';
 import { MarkerPin } from './MarkerPin.js';
@@ -75,11 +77,30 @@ export function Pinpoint({
     if (endpoint) toolbarStore.updateSettings({ serverUrl: endpoint });
   }, [endpoint]);
 
-  // Emit sessionCreated on mount
+  // Connect to MCP server — create session, start SSE stream
   useEffect(() => {
-    const { sessionId } = toolbarStore.get();
-    onSessionCreated?.(sessionId);
-  }, [onSessionCreated]);
+    if (!endpoint) return;
+
+    const existingId = externalSessionId ?? toolbarStore.get().sessionId;
+
+    const connect = (sessionId: string) => {
+      toolbarStore.set({ sessionId });
+      onSessionCreated?.(sessionId);
+      sseClient.connect(endpoint, sessionId);
+    };
+
+    if (existingId) {
+      httpClient.setSession(endpoint, existingId);
+      connect(existingId);
+    } else {
+      httpClient.init(endpoint).then(sessionId => {
+        if (sessionId) connect(sessionId);
+      }).catch(() => { /* server unreachable — offline mode */ });
+    }
+
+    return () => { sseClient.disconnect(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endpoint, externalSessionId]);
 
   // Wire deletion & clear callbacks to store changes
   useEffect(() => {
@@ -183,6 +204,14 @@ export function Pinpoint({
     toolbarStore.set({ mode: 'idle' });
   }, []);
 
+  // Intercept annotation adds — call user callback and POST to server
+  const handleAnnotationAdd = useCallback((ann: Annotation) => {
+    onAnnotationAdd?.(ann);
+    if (httpClient.isConfigured()) {
+      httpClient.postAnnotation(ann).catch(() => { /* silent — server may be unreachable */ });
+    }
+  }, [onAnnotationAdd]);
+
   // Portal root — created once via useState (stable ref across StrictMode remounts),
   // mounted/unmounted via useEffect so it survives the StrictMode unmount→remount cycle.
   const [portalRoot] = useState(() => {
@@ -265,7 +294,7 @@ export function Pinpoint({
           config={state.popupConfig}
           sessionId={state.sessionId}
           annotationCount={state.annotations.length}
-          onAnnotationAdd={onAnnotationAdd}
+          onAnnotationAdd={handleAnnotationAdd}
         />
       )}
 
