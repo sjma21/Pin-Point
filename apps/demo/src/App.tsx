@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AnnotationIntent, AnnotationSeverity, generateId, truncate } from '@pinpoint/shared';
+import { Pinpoint } from '@pinpoint/toolbar';
 import CoreTest from './CoreTest';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -442,6 +443,10 @@ export default function App() {
         <CoreTest />
       </main>
       <Footer />
+      <Pinpoint
+        onAnnotationAdd={ann => console.log('[Pinpoint] annotation added:', ann)}
+        onCopy={md => console.log('[Pinpoint] copied markdown:\n', md)}
+      />
     </div>
   );
 }
