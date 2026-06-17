@@ -6,7 +6,7 @@
   "types": "./dist/cli.d.ts",
   "main": "./dist/cli.js",
   "bin": {
-    "pinpoint-server": "./dist/cli.js"
+    "pinpoint": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsup src/cli.ts src/index.ts --format esm --dts",

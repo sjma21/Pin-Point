@@ -200,6 +200,8 @@ export function createMcpServer(): McpServer {
         sessionId,
         timeoutSeconds * 1000,
         batchWindowSeconds * 1000,
+        () => sseManager.broadcastAll('agent.watching.started', {}),
+        () => sseManager.broadcastAll('agent.watching.stopped', {}),
       );
       return text({ count: annotations.length, timedOut: annotations.length === 0, annotations });
     },
@@ -212,7 +214,11 @@ async function waitForAnnotations(
   sessionId: string | undefined,
   timeoutMs: number,
   batchWindowMs: number,
+  onStart?: () => void,
+  onFinish?: () => void,
 ): Promise<Annotation[]> {
+  onStart?.();
+
   const initialIds = new Set<string>(
     (sessionId
       ? annotationStore.getPendingForSession(sessionId)
@@ -231,6 +237,7 @@ async function waitForAnnotations(
       if (batchTimer) clearTimeout(batchTimer);
       clearTimeout(timeoutTimer);
       unsubscribe();
+      onFinish?.();
       resolve(batch);
     };
 
