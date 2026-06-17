@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "pinpoint": {
+      "command": "node",
+      "args": [
+        "/Users/sajalmishra/Desktop/Pin-point/packages/mcp-server/dist/cli.js",
+        "server",
+        "--port",
+        "4747"
+      ],
+      "env": {}
+    }
+  }
+}
