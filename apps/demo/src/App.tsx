@@ -1,6 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
-import { Pinpoint } from '@pinpoint/toolbar';
-import Home from './pages/Home';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Landing from './landing/Landing';
+import DemoApp from './demo/DemoApp';
+// Docs pages (accessible via sidebar from /docs/*)
+import DocsHome from './pages/Home';
 import Install from './pages/Install';
 import Features from './pages/Features';
 import Output from './pages/Output';
@@ -12,20 +14,26 @@ import Faq from './pages/Faq';
 
 export default function App() {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/install" element={<Install />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/output" element={<Output />} />
-        <Route path="/schema" element={<Schema />} />
-        <Route path="/mcp" element={<Mcp />} />
-        <Route path="/api" element={<Api />} />
-        <Route path="/changelog" element={<Changelog />} />
-        <Route path="/faq" element={<Faq />} />
-      </Routes>
+    <Routes>
+      {/* Marketing landing page */}
+      <Route path="/" element={<Landing />} />
 
-      <Pinpoint endpoint="http://localhost:4747" />
-    </>
+      {/* Interactive demo — Pinpoint toolbar embedded inside DemoApp */}
+      <Route path="/demo" element={<DemoApp />} />
+
+      {/* Documentation */}
+      <Route path="/docs" element={<DocsHome />} />
+      <Route path="/install" element={<Install />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="/output" element={<Output />} />
+      <Route path="/schema" element={<Schema />} />
+      <Route path="/mcp" element={<Mcp />} />
+      <Route path="/api" element={<Api />} />
+      <Route path="/changelog" element={<Changelog />} />
+      <Route path="/faq" element={<Faq />} />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

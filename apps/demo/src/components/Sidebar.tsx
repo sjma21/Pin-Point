@@ -9,7 +9,7 @@ const navSections = [
   {
     label: 'Getting Started',
     links: [
-      { to: '/', label: 'Overview' },
+      { to: '/docs', label: 'Overview' },
       { to: '/install', label: 'Installation' },
     ],
   },
