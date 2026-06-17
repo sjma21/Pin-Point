@@ -18,9 +18,10 @@ class LayoutController {
     if (this._active) return this._sections;
     this._active = true;
     this._savedScrollY = window.scrollY;
-    // Freeze scroll
+    // Lock scroll in place without jumping — compensate for scrollbar disappearing
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
-    if (window.scrollY !== 0) window.scrollTo(0, 0);
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     this._sections = this._scanSections();
     return this._sections;
   }
@@ -29,7 +30,7 @@ class LayoutController {
     if (!this._active) return;
     this._active = false;
     document.body.style.overflow = '';
-    window.scrollTo(0, this._savedScrollY);
+    document.body.style.paddingRight = '';
     this._sections = [];
   }
 
