@@ -31,6 +31,7 @@ class LayoutController {
     this._active = false;
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
+    window.scrollTo(0, this._savedScrollY);
     this._sections = [];
   }
 
