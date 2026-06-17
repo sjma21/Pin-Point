@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { Annotation } from '@pinpoint/shared';
 import { FONT, Z } from '../theme.js';
@@ -183,8 +183,9 @@ export function Pinpoint({
     toolbarStore.set({ mode: 'idle' });
   }, []);
 
-  // Portal root
-  const portalRoot = useMemo(() => {
+  // Portal root — created once via useState (stable ref across StrictMode remounts),
+  // mounted/unmounted via useEffect so it survives the StrictMode unmount→remount cycle.
+  const [portalRoot] = useState(() => {
     const div = document.createElement('div');
     div.id = '__pinpoint_portal';
     div.setAttribute('data-pinpoint', 'root');
@@ -194,20 +195,41 @@ export function Pinpoint({
       `font-family:${FONT}`, 'font-size:14px',
       'line-height:1.5', 'box-sizing:border-box',
       'pointer-events:none',
-      `z-index:${Z.markers - 1}`,
+      'z-index:2147483000', // creates stacking context above host app; child z-indices are relative to this
     ].join(';');
-    document.body.appendChild(div);
     return div;
-  }, []);
+  });
 
-  useEffect(() => () => { portalRoot.remove(); }, [portalRoot]);
+  const [portalMounted, setPortalMounted] = useState(false);
+  useEffect(() => {
+    document.body.appendChild(portalRoot);
+    setPortalMounted(true);
+    return () => {
+      portalRoot.remove();
+      setPortalMounted(false);
+    };
+  }, [portalRoot]);
+
+  if (!portalMounted) return null;
 
   return createPortal(
     <>
+      {/* Block host-app interactions while capturing (respects user setting) */}
+      {state.mode === 'capturing' && state.settings.blockInteractions && !state.popupConfig && (
+        <div
+          data-pinpoint="block-overlay"
+          style={{
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+            zIndex: Z.blockInteractions, pointerEvents: 'auto', cursor: 'crosshair',
+            opacity: 0,
+          }}
+        />
+      )}
+
       {/* Highlight — always on when capturing */}
       <HighlightOverlay active={state.mode === 'capturing' && !state.popupConfig} />
 
-      {/* Transparent capture overlay */}
+      {/* Transparent capture overlay — handles element picking */}
       {state.mode === 'capturing' && !state.popupConfig && (
         <div
           data-pinpoint="capture-overlay"

@@ -116,6 +116,7 @@ export function AnnotationPopup({ config, onAnnotationAdd, sessionId, annotation
         width: POP_W,
         maxHeight: POP_H,
         zIndex: Z.popup,
+        pointerEvents: 'auto',
         background: C.bg,
         border: `1px solid ${C.borderLight}`,
         borderRadius: 12,

@@ -22,13 +22,14 @@ export const C = {
 } as const;
 
 export const Z = {
-  markers: 2147483635,
-  markerTooltip: 2147483636,
-  highlight: 2147483638,
-  capture: 2147483640,
-  popup: 2147483643,
-  toolbar: 2147483645,
-  settings: 2147483646,
+  blockInteractions: 2147483620, // blocks host app only; below all toolbar UI
+  highlight:         2147483625,
+  capture:           2147483630,
+  markers:           2147483635,
+  markerTooltip:     2147483636,
+  toolbar:           2147483638,
+  popup:             2147483643, // must be above toolbar
+  settings:          2147483645, // must be above popup
 } as const;
 
 export const FONT = `-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, sans-serif`;

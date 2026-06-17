@@ -53,7 +53,7 @@ export function SettingsPanel() {
       data-pinpoint="settings"
       style={{
         position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-        zIndex: Z.settings, background: 'rgba(0,0,0,0.5)',
+        zIndex: Z.settings, pointerEvents: 'auto', background: 'rgba(0,0,0,0.5)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontFamily: FONT,
       }}
