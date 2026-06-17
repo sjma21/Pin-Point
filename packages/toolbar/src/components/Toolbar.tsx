@@ -4,6 +4,8 @@ import { toolbarStore } from '../state/toolbarState.js';
 import { useToolbarState } from '../state/useToolbarState.js';
 import { serializeAnnotations } from '../core/markdownSerializer.js';
 import { pauseAnimations, resumeAnimations } from '../core/animationController.js';
+import { isPendingMarkerStatus } from '../core/annotationStatus.js';
+import { LayoutToolbar } from './layout/LayoutToolbar.js';
 
 async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -83,8 +85,8 @@ export function Toolbar({ onCopy }: Props) {
   }
 
   async function handleCopy() {
-    if (state.annotations.length === 0) return;
-    const md = serializeAnnotations(state.annotations, state.settings.detailLevel);
+    if (pending.length === 0) return;
+    const md = serializeAnnotations(pending, state.settings.detailLevel);
     const ok = await copyToClipboard(md);
     if (ok) {
       setCopied(true);
@@ -100,8 +102,11 @@ export function Toolbar({ onCopy }: Props) {
     setConfirmClear(false);
   }
 
-  const count = state.annotations.length;
+  const pending = state.annotations.filter(a => isPendingMarkerStatus(a.status));
+  const count = pending.length;
   const isCapturing = state.mode === 'capturing';
+  const placementCount = state.annotations.filter(a => (a.kind as string) === 'placement').length;
+  const rearrangeCount = state.annotations.filter(a => (a.kind as string) === 'rearrange').length;
 
   const btn = (active: boolean, hue: string): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
@@ -228,9 +233,20 @@ export function Toolbar({ onCopy }: Props) {
           style={btn(state.layoutMode, C.primaryBright)}
           title="Toggle layout mode (L)"
         >
-          ⬜
+          {state.layoutMode ? '⊠ Layout' : '⬜ Layout'}
         </button>
       </div>
+
+      {/* Layout mode expanded controls */}
+      {state.layoutMode && (
+        <LayoutToolbar
+          placementCount={placementCount}
+          rearrangeCount={rearrangeCount}
+          wireframeMode={state.wireframeMode}
+          wireframeOpacity={state.wireframeOpacity}
+          wireframePurpose={state.wireframePurpose}
+        />
+      )}
     </div>
   );
 }

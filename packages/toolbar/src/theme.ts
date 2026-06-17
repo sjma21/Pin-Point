@@ -27,7 +27,9 @@ export const Z = {
   capture:           2147483630,
   markers:           2147483635,
   markerTooltip:     2147483636,
+  palette:           2147483637, // layout mode component palette sidebar
   toolbar:           2147483638,
+  layoutPanel:       2147483640, // layout toolbar expansion (above normal toolbar)
   popup:             2147483643, // must be above toolbar
   settings:          2147483645, // must be above popup
 } as const;

@@ -8,12 +8,17 @@ import { serializeAnnotations } from '../core/markdownSerializer.js';
 import { pauseAnimations, resumeAnimations } from '../core/animationController.js';
 import { httpClient } from '../core/httpClient.js';
 import { sseClient } from '../core/sseClient.js';
+import { isPendingMarkerStatus } from '../core/annotationStatus.js';
+import { layoutController } from '../core/layoutController.js';
+import { placementHandler } from '../core/placementHandler.js';
+import { rearrangeHandler } from '../core/rearrangeHandler.js';
 import { Toolbar } from './Toolbar.js';
 import { AnnotationPopup } from './AnnotationPopup.js';
 import { MarkerPin } from './MarkerPin.js';
 import { HighlightOverlay } from './HighlightOverlay.js';
 import { AreaSelectionOverlay } from './AreaSelectionOverlay.js';
 import { SettingsPanel } from './SettingsPanel.js';
+import { ComponentPalette } from './layout/ComponentPalette.js';
 
 export interface PinpointProps {
   endpoint?: string;
@@ -81,24 +86,73 @@ export function Pinpoint({
   useEffect(() => {
     if (!endpoint) return;
 
-    const existingId = externalSessionId ?? toolbarStore.get().sessionId;
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
     const connect = (sessionId: string) => {
+      if (cancelled) return;
+      httpClient.setSession(endpoint, sessionId);
       toolbarStore.set({ sessionId });
       onSessionCreated?.(sessionId);
       sseClient.connect(endpoint, sessionId);
     };
 
-    if (existingId) {
-      httpClient.setSession(endpoint, existingId);
-      connect(existingId);
-    } else {
-      httpClient.init(endpoint).then(sessionId => {
-        if (sessionId) connect(sessionId);
-      }).catch(() => { /* server unreachable — offline mode */ });
-    }
+    const scheduleRetry = () => {
+      if (cancelled || retryTimer) return;
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        void ensureSession();
+      }, 2000);
+    };
 
-    return () => { sseClient.disconnect(); };
+    const ensureSession = async (): Promise<void> => {
+      const existingId = externalSessionId ?? httpClient.sessionId;
+      if (existingId) {
+        httpClient.setSession(endpoint, existingId);
+        const ok = await httpClient.verifySession(existingId);
+        if (ok) {
+          connect(existingId);
+          return;
+        }
+        httpClient.clearSession();
+      }
+      try {
+        const sessionId = await httpClient.init(endpoint);
+        if (sessionId) {
+          connect(sessionId);
+          return;
+        }
+        scheduleRetry();
+      } catch {
+        // Server may be booting — retry until connected or unmounted.
+        scheduleRetry();
+      }
+    };
+
+    const reconnectWithFreshSession = async (): Promise<void> => {
+      try {
+        httpClient.clearSession();
+        const next = await httpClient.init(endpoint);
+        if (next) connect(next);
+        else scheduleRetry();
+      } catch {
+        scheduleRetry();
+      }
+    };
+
+    sseClient.onSessionNotFound = () => {
+      if (cancelled) return;
+      void reconnectWithFreshSession();
+    };
+
+    void ensureSession();
+
+    return () => {
+      cancelled = true;
+      sseClient.onSessionNotFound = null;
+      if (retryTimer) clearTimeout(retryTimer);
+      sseClient.disconnect();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint, externalSessionId]);
 
@@ -110,23 +164,90 @@ export function Pinpoint({
     });
   }, [onAnnotationDelete, onAnnotationsClear]);
 
-  // Layout mode — inject / remove CSS outline overlay
+  // Layout mode — activate/deactivate controller, rearrange handler, and CSS outlines
   useEffect(() => {
-    if (!state.layoutMode) return;
+    if (!state.layoutMode) {
+      rearrangeHandler.deactivate();
+      layoutController.deactivate();
+      placementHandler.destroy();
+      return;
+    }
+    const sections = layoutController.activate();
+    rearrangeHandler.activate(sections);
+
     const style = document.createElement('style');
     style.id = '__pp_layout';
     style.textContent = `
       *:not([data-pinpoint] *):not([data-pinpoint]) {
-        outline: 1px solid rgba(99,102,241,0.18) !important;
+        outline: 1px solid rgba(99,102,241,0.14) !important;
       }
       div:not([data-pinpoint] *), section:not([data-pinpoint] *), main:not([data-pinpoint] *),
       article:not([data-pinpoint] *), aside:not([data-pinpoint] *), header:not([data-pinpoint] *),
       footer:not([data-pinpoint] *), nav:not([data-pinpoint] *) {
-        outline: 1px solid rgba(99,102,241,0.32) !important;
+        outline: 1px solid rgba(99,102,241,0.28) !important;
       }
     `;
     document.head.appendChild(style);
-    return () => { style.remove(); };
+
+    return () => {
+      style.remove();
+      rearrangeHandler.deactivate();
+      layoutController.deactivate();
+      placementHandler.destroy();
+      // Reset wireframe on exit
+      if (toolbarStore.get().wireframeMode) {
+        toolbarStore.set({ wireframeMode: false });
+      }
+    };
+  }, [state.layoutMode]);
+
+  // Wireframe mode — inject page fade overlay
+  useEffect(() => {
+    if (!state.wireframeMode) return;
+    document.body.style.setProperty('--pp-wf-opacity', String(state.wireframeOpacity));
+    const style = document.createElement('style');
+    style.id = '__pp_wireframe';
+    style.textContent = `body > *:not([data-pinpoint]) { opacity: var(--pp-wf-opacity, 0.15) !important; transition: opacity 0.3s; }`;
+    document.head.appendChild(style);
+    return () => {
+      style.remove();
+      document.body.style.removeProperty('--pp-wf-opacity');
+    };
+  }, [state.wireframeMode]);
+
+  // Update wireframe opacity live when slider changes
+  useEffect(() => {
+    if (!state.wireframeMode) return;
+    document.body.style.setProperty('--pp-wf-opacity', String(state.wireframeOpacity));
+  }, [state.wireframeOpacity, state.wireframeMode]);
+
+  // Drag-and-drop from ComponentPalette onto page
+  useEffect(() => {
+    if (!state.layoutMode) return;
+    const purpose = () => toolbarStore.get().wireframePurpose;
+
+    function onDragOver(e: DragEvent) {
+      const target = e.target as Element | null;
+      if (target?.closest('[data-pinpoint="layout-palette"]')) return;
+      placementHandler.handleDragOver(e);
+    }
+    function onDragLeave(e: DragEvent) {
+      placementHandler.handleDragLeave(e);
+    }
+    function onDrop(e: DragEvent) {
+      const target = e.target as Element | null;
+      if (target?.closest('[data-pinpoint="layout-palette"]')) return;
+      placementHandler.handleDrop(e, purpose());
+    }
+
+    document.addEventListener('dragover', onDragOver);
+    document.addEventListener('dragleave', onDragLeave);
+    document.addEventListener('drop', onDrop);
+    return () => {
+      document.removeEventListener('dragover', onDragOver);
+      document.removeEventListener('dragleave', onDragLeave);
+      document.removeEventListener('drop', onDrop);
+    };
   }, [state.layoutMode]);
 
   // Keyboard shortcuts
@@ -278,15 +399,26 @@ export function Pinpoint({
         <AreaSelectionOverlay onComplete={handleAreaSelection} />
       )}
 
-      {/* Marker pins */}
-      {state.markersVisible && state.annotations.map((ann, i) => (
-        <MarkerPin
-          key={ann.id}
-          annotation={ann}
-          index={i + 1}
-          color={state.settings.markerColor}
-        />
-      ))}
+      {/* Marker pins — separate numbering for feedback vs placement vs rearrange */}
+      {state.markersVisible && (() => {
+        const pendingAnns = state.annotations.filter(ann => isPendingMarkerStatus(ann.status));
+        const feedbackAnns = pendingAnns.filter(a => (a.kind as string) !== 'placement' && (a.kind as string) !== 'rearrange');
+        const placementAnns = pendingAnns.filter(a => (a.kind as string) === 'placement');
+        const rearrangeAnns = pendingAnns.filter(a => (a.kind as string) === 'rearrange');
+        return (
+          <>
+            {feedbackAnns.map((ann, i) => (
+              <MarkerPin key={ann.id} annotation={ann} index={i + 1} color={state.settings.markerColor} />
+            ))}
+            {placementAnns.map((ann, i) => (
+              <MarkerPin key={ann.id} annotation={ann} index={i + 1} color={state.settings.markerColor} />
+            ))}
+            {rearrangeAnns.map((ann, i) => (
+              <MarkerPin key={ann.id} annotation={ann} index={i + 1} color={state.settings.markerColor} />
+            ))}
+          </>
+        );
+      })()}
 
       {/* Popup */}
       {state.popupConfig && (
@@ -296,6 +428,11 @@ export function Pinpoint({
           annotationCount={state.annotations.length}
           onAnnotationAdd={handleAnnotationAdd}
         />
+      )}
+
+      {/* Component palette — slides in from left when layout mode is active */}
+      {state.layoutMode && (
+        <ComponentPalette wireframePurpose={state.wireframePurpose} />
       )}
 
       {/* Toolbar — always visible */}

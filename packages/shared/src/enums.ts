@@ -30,6 +30,8 @@ export enum AnnotationKind {
   Network = 'network',
   Console = 'console',
   Freeform = 'freeform',
+  Placement = 'placement',
+  Rearrange = 'rearrange',
 }
 
 export enum SessionStatus {

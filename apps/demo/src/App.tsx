@@ -136,11 +136,21 @@ function Nav() {
 function Hero() {
   return (
     <section style={{ background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 60%)', padding: '5rem 1.5rem 4rem', textAlign: 'center' }}>
+      <style>{`
+        @keyframes heroFadeSlide {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50%       { background-position: 100% 50%; }
+        }
+      `}</style>
       <div style={{ maxWidth: 700, margin: '0 auto' }}>
         <Badge label="Now with MCP Support" color="primary" />
-        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.25rem)', fontWeight: 900, lineHeight: 1.15, margin: '1rem 0 1.25rem', letterSpacing: '-0.02em' }}>
+        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.25rem)', fontWeight: 900, lineHeight: 1.15, margin: '1rem 0 1.25rem', letterSpacing: '-0.02em', animation: 'heroFadeSlide 0.75s ease-out both', color: 'var(--color-text)' }}>
           Visual feedback for<br />
-          <span style={{ color: 'var(--color-primary)' }}>AI coding agents</span>
+          <span style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed, #2563eb)', backgroundSize: '200% 200%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'gradientShift 4s ease infinite' }}>AI coding agents</span>
         </h1>
         <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)', maxWidth: 540, margin: '0 auto 2rem', lineHeight: 1.7 }}>
           Click any element on your app to annotate it. Pinpoint turns your feedback into structured data
@@ -444,6 +454,8 @@ export default function App() {
       </main>
       <Footer />
       <Pinpoint
+        endpoint="http://localhost:4747"
+        onSessionCreated={(id) => console.log('Session:', id)}
         onAnnotationAdd={ann => console.log('[Pinpoint] annotation added:', ann)}
         onCopy={md => console.log('[Pinpoint] copied markdown:\n', md)}
       />

@@ -3,9 +3,49 @@ import { z } from 'zod';
 import type { Annotation } from '@pinpoint/shared';
 import { AnnotationStatus } from '@pinpoint/shared';
 import { annotationStore } from '../store/annotationStore.js';
+import { sseManager } from '../http/sseManager.js';
 
 function text(data: unknown): { content: [{ type: 'text'; text: string }] } {
   return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] };
+}
+
+function enrichAnnotation(ann: Annotation): Record<string, unknown> {
+  const base = ann as unknown as Record<string, unknown>;
+  const kind = ann.kind as string;
+  const meta = (ann.metadata ?? {}) as Record<string, unknown>;
+
+  if (kind === 'placement') {
+    return {
+      ...base,
+      layoutContext: {
+        componentType: meta['componentType'],
+        xPercent: meta['xPercent'],
+        yPercent: meta['yPercent'],
+        dropWidth: meta['dropWidth'],
+        dropHeight: meta['dropHeight'],
+        scrollY: meta['scrollY'],
+        wireframePurpose: meta['wireframePurpose'] ?? null,
+      },
+    };
+  }
+
+  if (kind === 'rearrange') {
+    return {
+      ...base,
+      layoutContext: {
+        sectionLabel: meta['sectionLabel'],
+        sectionSelector: meta['sectionSelector'],
+        originalIndex: meta['originalIndex'],
+        newIndex: meta['newIndex'],
+        targetLabel: meta['targetLabel'],
+        targetSelector: meta['targetSelector'],
+        originalRect: meta['originalRect'],
+        currentRect: meta['currentRect'],
+      },
+    };
+  }
+
+  return base;
 }
 
 export function createMcpServer(): McpServer {
@@ -44,22 +84,34 @@ export function createMcpServer(): McpServer {
   // 3 ── pending for one session
   server.tool(
     'pinpoint_get_pending',
-    'Get pending annotations for a session.',
+    'Get pending annotations for a session. Includes feedback, placement (new components to add), and rearrange (sections to reorder) annotations. Each annotation has a kind field and a layoutContext field for placement/rearrange kinds.',
     { sessionId: z.string().describe('Session ID') },
     async ({ sessionId }) => {
       const annotations = annotationStore.getPendingForSession(sessionId);
-      return text({ count: annotations.length, annotations });
+      const enriched = annotations.map(enrichAnnotation);
+      const byKind = {
+        feedback: enriched.filter(a => a['kind'] !== 'placement' && a['kind'] !== 'rearrange').length,
+        placement: enriched.filter(a => a['kind'] === 'placement').length,
+        rearrange: enriched.filter(a => a['kind'] === 'rearrange').length,
+      };
+      return text({ count: enriched.length, byKind, annotations: enriched });
     },
   );
 
   // 4 ── all pending across all sessions
   server.tool(
     'pinpoint_get_all_pending',
-    'Get all pending annotations across all pages. Use this to see everything the human wants you to address.',
+    'Get all pending annotations across all pages. Includes feedback, placement (new components to add), and rearrange (sections to reorder) annotations. Each annotation has a kind field and a layoutContext field for placement/rearrange kinds.',
     {},
     async () => {
       const annotations = annotationStore.getAllPending();
-      return text({ count: annotations.length, annotations });
+      const enriched = annotations.map(enrichAnnotation);
+      const byKind = {
+        feedback: enriched.filter(a => a['kind'] !== 'placement' && a['kind'] !== 'rearrange').length,
+        placement: enriched.filter(a => a['kind'] === 'placement').length,
+        rearrange: enriched.filter(a => a['kind'] === 'rearrange').length,
+      };
+      return text({ count: enriched.length, byKind, annotations: enriched });
     },
   );
 
@@ -71,6 +123,7 @@ export function createMcpServer(): McpServer {
     async ({ annotationId }) => {
       const ann = annotationStore.updateAnnotationStatus(annotationId, AnnotationStatus.InProgress);
       if (!ann) return text({ error: 'Annotation not found' });
+      sseManager.broadcastToSession(ann.sessionId, 'annotation.updated', { annotation: ann });
       return text({ success: true, annotation: ann });
     },
   );
@@ -86,6 +139,7 @@ export function createMcpServer(): McpServer {
     async ({ annotationId, summary }) => {
       const ann = annotationStore.updateAnnotationStatus(annotationId, AnnotationStatus.Resolved, { summary });
       if (!ann) return text({ error: 'Annotation not found' });
+      sseManager.broadcastToSession(ann.sessionId, 'annotation.updated', { annotation: ann });
       return text({ success: true, annotation: ann });
     },
   );
@@ -101,6 +155,7 @@ export function createMcpServer(): McpServer {
     async ({ annotationId, reason }) => {
       const ann = annotationStore.updateAnnotationStatus(annotationId, AnnotationStatus.Dismissed, { reason });
       if (!ann) return text({ error: 'Annotation not found' });
+      sseManager.broadcastToSession(ann.sessionId, 'annotation.updated', { annotation: ann });
       return text({ success: true, annotation: ann });
     },
   );
@@ -116,6 +171,7 @@ export function createMcpServer(): McpServer {
     async ({ annotationId, message }) => {
       const ann = annotationStore.addThreadMessage(annotationId, message, 'agent');
       if (!ann) return text({ error: 'Annotation not found' });
+      sseManager.broadcastToSession(ann.sessionId, 'thread.message', { annotation: ann });
       return text({ success: true, annotation: ann });
     },
   );

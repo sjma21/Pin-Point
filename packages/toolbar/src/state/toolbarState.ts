@@ -37,6 +37,9 @@ export interface ToolbarStateData {
   markersVisible: boolean;
   animationsPaused: boolean;
   layoutMode: boolean;
+  wireframeMode: boolean;
+  wireframeOpacity: number;
+  wireframePurpose: string;
   popupConfig: PopupConfig | null;
   toolbarPosition: ToolbarPosition;
   settingsOpen: boolean;
@@ -98,6 +101,9 @@ class ToolbarStore {
       markersVisible: true,
       animationsPaused: false,
       layoutMode: false,
+      wireframeMode: false,
+      wireframeOpacity: 0.15,
+      wireframePurpose: '',
       popupConfig: null,
       toolbarPosition: loadToolbarPosition(),
       settingsOpen: false,
@@ -125,10 +131,17 @@ class ToolbarStore {
   }
 
   updateAnnotation(updated: Annotation): void {
-    const annotations = this._state.annotations.map(a => a.id === updated.id ? updated : a);
+    this.upsertAnnotation(updated);
+  }
+
+  upsertAnnotation(ann: Annotation): void {
+    const exists = this._state.annotations.some(a => a.id === ann.id);
+    const annotations = exists
+      ? this._state.annotations.map(a => a.id === ann.id ? ann : a)
+      : [...this._state.annotations, ann];
     this._state = { ...this._state, annotations };
     saveAnnotations(annotations);
-    emit('annotationUpdated', updated);
+    emit(exists ? 'annotationUpdated' : 'annotationAdded', ann);
     this._notify();
   }
 
