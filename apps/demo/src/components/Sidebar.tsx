@@ -92,6 +92,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         <div className="sidebar-footer">
+          <div className="sidebar-npm-packages">
+            <div className="sidebar-npm-label">npm packages</div>
+            <a href="https://www.npmjs.com/package/@sajalmishra/markpin" target="_blank" rel="noopener noreferrer" className="sidebar-npm-link">
+              @sajalmishra/markpin
+            </a>
+            <a href="https://www.npmjs.com/package/@sajalmishra/markpin-mcp" target="_blank" rel="noopener noreferrer" className="sidebar-npm-link">
+              @sajalmishra/markpin-mcp
+            </a>
+            <a href="https://www.npmjs.com/package/@sajalmishra/markpin-shared" target="_blank" rel="noopener noreferrer" className="sidebar-npm-link">
+              @sajalmishra/markpin-shared
+            </a>
+          </div>
           <div className="sidebar-footer-row">
             <a
               href="https://github.com/sjma21/Pin-Point/"

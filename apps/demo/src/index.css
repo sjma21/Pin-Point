@@ -291,6 +291,55 @@ tr:hover td { background: var(--color-surface); }
 }
 .sidebar-footer-link:hover { color: var(--color-text-muted); text-decoration: none; }
 
+/* ── Sidebar npm packages ── */
+.sidebar-npm-packages {
+  display: flex; flex-direction: column; gap: 2px;
+  margin-bottom: 0.75rem;
+}
+.sidebar-npm-label {
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--color-text-dim);
+  margin-bottom: 4px;
+}
+.sidebar-npm-link {
+  font-size: 0.75rem; color: var(--color-text-muted);
+  text-decoration: none; padding: 3px 0;
+  transition: color 0.12s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar-npm-link:hover { color: var(--color-primary); text-decoration: underline; }
+
+/* ── Install page npm package cards ── */
+.npm-package-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin: 1rem 0 1.5rem;
+}
+.npm-package-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  text-decoration: none; color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.npm-package-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-dim);
+  text-decoration: none;
+}
+.npm-package-name {
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--color-primary); flex-shrink: 0;
+}
+.npm-package-desc {
+  font-size: 0.85rem; color: var(--color-text-muted); flex: 1;
+}
+.npm-package-arrow {
+  font-size: 0.85rem; color: var(--color-text-dim); flex-shrink: 0;
+}
+
 /* ── Theme toggle switch ── */
 .theme-toggle {
   background: none; border: none; padding: 0; cursor: pointer;
