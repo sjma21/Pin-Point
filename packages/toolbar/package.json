@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pinpoint-dev/pinpoint.git",
+    "url": "https://github.com/sjma21/Pin-Point.git",
     "directory": "packages/toolbar"
   },
-  "homepage": "https://github.com/pinpoint-dev/pinpoint#readme",
+  "homepage": "https://github.com/sjma21/Pin-Point#readme",
   "bugs": {
-    "url": "https://github.com/pinpoint-dev/pinpoint/issues"
+    "url": "https://github.com/sjma21/Pin-Point/issues"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

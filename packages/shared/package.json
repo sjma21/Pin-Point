@@ -1,6 +1,17 @@
 {
   "name": "@sajalmishra/markpin-shared",
   "version": "0.0.2",
+  "description": "Shared TypeScript types for the Markpin annotation system",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sjma21/Pin-Point.git",
+    "directory": "packages/shared"
+  },
+  "homepage": "https://github.com/sjma21/Pin-Point#readme",
+  "bugs": {
+    "url": "https://github.com/sjma21/Pin-Point/issues"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
