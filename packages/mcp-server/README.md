@@ -1,37 +1,64 @@
-# @pinpoint/mcp-server
+# @sajalmishra/markpin-mcp
 
-The Pinpoint MCP server stores browser annotations and exposes 9 MCP tools your AI coding agent can call to read, acknowledge, fix, and resolve UI feedback.
+MCP server for Markpin visual feedback tool. Stores browser annotations and exposes 9 MCP tools your AI coding agent can call to read, acknowledge, fix, and resolve UI feedback.
 
-## Install & run
+## Install
 
 ```bash
-# Run directly (no install needed)
-npx pinpoint server
+# Run directly (no global install needed)
+npx @sajalmishra/markpin-mcp init    # configure Claude Code
+npx @sajalmishra/markpin-mcp server  # start the server
 
 # Or install globally
-npm install -g @pinpoint/mcp-server
-pinpoint server
-
-# Custom port
-pinpoint server --port 4747
+npm install -g @sajalmishra/markpin-mcp
+markpin-mcp init
+markpin-mcp server
 ```
 
-The server starts at `http://localhost:4747`.
+## Quick start
 
-## Connect to Claude Code
+```bash
+# 1. Add to Claude Code config automatically
+markpin-mcp init
 
-Add to `.claude/settings.json`:
+# 2. Start the server
+markpin-mcp server
+# [markpin] HTTP  → http://localhost:4747
+# [markpin] MCP   → stdio
+# [markpin] Ready — annotate in browser, Claude fixes it.
 
-```json
-{
-  "mcpServers": {
-    "pinpoint": {
-      "command": "npx",
-      "args": ["pinpoint", "server"]
-    }
-  }
-}
+# 3. Verify everything is working
+markpin-mcp doctor
 ```
+
+Then add the toolbar to your React app:
+
+```bash
+npm install @sajalmishra/markpin -D
+```
+
+```tsx
+import { Pinpoint } from '@sajalmishra/markpin';
+// Add <Pinpoint /> to your app — dev only
+```
+
+## CLI commands
+
+| Command | Description |
+|---------|-------------|
+| `markpin-mcp server` | Start the HTTP + MCP server |
+| `markpin-mcp init` | Write MCP config to `.mcp.json` in the current directory |
+| `markpin-mcp doctor` | Check Node.js version, MCP config, and port availability |
+
+All commands accept `--port PORT` to override the default port (4747).
+
+## Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `PINPOINT_PORT` | Override the default port (4747). Lower priority than `--port` flag. |
+
+Example: `PINPOINT_PORT=8080 markpin-mcp server`
 
 ## MCP tools
 
@@ -47,20 +74,6 @@ Add to `.claude/settings.json`:
 | `pinpoint_dismiss` | Mark an annotation you won't address, with a reason |
 | `pinpoint_reply` | Post a message to the annotation thread |
 
-## Hands-free mode
-
-Add this to your `CLAUDE.md` to enable watch-mode:
-
-```markdown
-When the user says "watch mode":
-1. Call pinpoint_watch_annotations (blocks until annotations arrive)
-2. For each annotation: call pinpoint_acknowledge
-3. Read metadata.sourceFile to find the file
-4. Fix the issue described in the comment
-5. Call pinpoint_resolve with a summary of what changed
-6. Repeat
-```
-
 ## REST API
 
 The server also exposes a REST API at `http://localhost:4747`:
@@ -68,8 +81,8 @@ The server also exposes a REST API at `http://localhost:4747`:
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/sessions` | List all sessions |
-| `GET` | `/sessions/:id` | Get one session |
 | `POST` | `/sessions` | Create a session |
+| `GET` | `/sessions/:id` | Get one session |
 | `DELETE` | `/sessions/:id` | Delete a session |
 | `GET` | `/sessions/:id/annotations` | List annotations |
 | `POST` | `/sessions/:id/annotations` | Create an annotation |
@@ -80,3 +93,7 @@ The server also exposes a REST API at `http://localhost:4747`:
 ## Requirements
 
 - Node.js 18+
+
+## Full docs
+
+See the [Markpin documentation](https://github.com/pinpoint-dev/pinpoint) for watch mode, critique mode, and agent integration guides.
