@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { serve } from '@hono/node-server';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createHttpServer } from './http/server.js';
@@ -12,13 +11,18 @@ import { execSync } from 'node:child_process';
 const args = process.argv.slice(2);
 const cmd = args[0] ?? 'server';
 
+const DEFAULT_PORT = 4747;
+
 function getPort(): number {
+  // Priority: --port flag > PINPOINT_PORT env var > default 4747
   const idx = args.indexOf('--port');
   if (idx !== -1) {
     const p = parseInt(args[idx + 1] ?? '', 10);
     if (!Number.isNaN(p)) return p;
   }
-  return 4747;
+  const envPort = parseInt(process.env['PINPOINT_PORT'] ?? '', 10);
+  if (!Number.isNaN(envPort)) return envPort;
+  return DEFAULT_PORT;
 }
 
 // ─── server ───────────────────────────────────────────────────────────────────
@@ -28,9 +32,9 @@ async function runServer(): Promise<void> {
 
   const app = createHttpServer();
   serve({ fetch: app.fetch, port }, () => {
-    process.stderr.write(`[pinpoint] HTTP  → http://localhost:${port}\n`);
-    process.stderr.write(`[pinpoint] MCP   → stdio\n`);
-    process.stderr.write(`[pinpoint] Ready — annotate in browser, Claude fixes it.\n`);
+    process.stderr.write(`[markpin] HTTP  → http://localhost:${port}\n`);
+    process.stderr.write(`[markpin] MCP   → stdio\n`);
+    process.stderr.write(`[markpin] Ready — annotate in browser, Claude fixes it.\n`);
   });
 
   const mcp = createMcpServer();
@@ -68,11 +72,11 @@ async function runInit(): Promise<void> {
     }
   }
 
-  config.mcpServers = { ...(config.mcpServers ?? {}), pinpoint: mcpEntry };
+  config.mcpServers = { ...(config.mcpServers ?? {}), markpin: mcpEntry };
 
   await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
   console.log(`✓ Written MCP config to ${configPath}`);
-  console.log(`  Pinpoint will start on port ${port}`);
+  console.log(`  Markpin will start on port ${port}`);
   console.log('');
   console.log('Next: restart Claude Code to pick up the new MCP server.');
   void candidates; // silence unused warning
@@ -96,10 +100,10 @@ async function runDoctor(): Promise<void> {
   if (hasMcpJson) {
     try {
       const cfg = JSON.parse(await readFile(mcpPath, 'utf8')) as { mcpServers?: Record<string, unknown> };
-      hasPinpointEntry = 'pinpoint' in (cfg.mcpServers ?? {});
+      hasPinpointEntry = 'markpin' in (cfg.mcpServers ?? {});
     } catch { /* ignore */ }
   }
-  console.log(`${hasMcpJson && hasPinpointEntry ? '✓' : '✗'} .mcp.json has pinpoint entry${!hasMcpJson ? ' (run: pinpoint init)' : ''}`);
+  console.log(`${hasMcpJson && hasPinpointEntry ? '✓' : '✗'} .mcp.json has markpin entry${!hasMcpJson ? ' (run: markpin-mcp init)' : ''}`);
   if (!hasMcpJson || !hasPinpointEntry) allGood = false;
 
   // Check if server can start briefly
@@ -140,6 +144,6 @@ switch (cmd) {
 
   default:
     console.error(`Unknown command: ${cmd}`);
-    console.error('Usage: pinpoint [server|init|doctor] [--port PORT]');
+    console.error('Usage: markpin-mcp [server|init|doctor] [--port PORT]');
     process.exit(1);
 }
