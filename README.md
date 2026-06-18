@@ -1,6 +1,8 @@
-# Pinpoint
+# Pinpoint (Markpin)
 
 Visual feedback for AI coding agents. Click any element in your running app to leave a structured annotation — your agent reads it, finds the source file, and fixes the issue.
+
+**Live demo:** [pin-point-demo.vercel.app](https://pin-point-demo.vercel.app/)
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -9,22 +11,30 @@ Visual feedback for AI coding agents. Click any element in your running app to l
 └────────────────────────────────────────────────────────────┘
 ```
 
+## Packages on npm
+
+| Package | Description | npm |
+|---------|-------------|-----|
+| `@sajalmishra/markpin` | React toolbar component | [npm](https://www.npmjs.com/package/@sajalmishra/markpin) |
+| `@sajalmishra/markpin-mcp` | MCP server + REST API + SSE | [npm](https://www.npmjs.com/package/@sajalmishra/markpin-mcp) |
+| `@sajalmishra/markpin-shared` | Shared AFS types | [npm](https://www.npmjs.com/package/@sajalmishra/markpin-shared) |
+
 ## Quick start
 
 **1. Add the toolbar to your app**
 
 ```bash
-npm install @pinpoint/toolbar
+npm install @sajalmishra/markpin -D
 ```
 
 ```tsx
-import { Pinpoint } from '@pinpoint/toolbar';
+import { Pinpoint } from '@sajalmishra/markpin';
 
 export function App() {
   return (
     <>
       <YourApp />
-      {import.meta.env.DEV && <Pinpoint endpoint="http://localhost:4747" />}
+      {import.meta.env.DEV && <Pinpoint />}
     </>
   );
 }
@@ -33,19 +43,20 @@ export function App() {
 **2. Start the MCP server**
 
 ```bash
-npx pinpoint server
+npx @sajalmishra/markpin-mcp init    # configure Claude Code
+npx @sajalmishra/markpin-mcp server  # start the server
 ```
 
 **3. Connect your agent**
 
-Add to `.claude/settings.json`:
+Add to `.mcp.json` (or run `markpin-mcp init` to do it automatically):
 
 ```json
 {
   "mcpServers": {
-    "pinpoint": {
+    "markpin": {
       "command": "npx",
-      "args": ["pinpoint", "server"]
+      "args": ["@sajalmishra/markpin-mcp", "server"]
     }
   }
 }
@@ -65,12 +76,12 @@ Then tell your agent: **"watch mode"** — it will wait for annotations and fix 
 
 ```
 packages/
-  toolbar/      @pinpoint/toolbar    — React toolbar component
-  mcp-server/   @pinpoint/mcp-server — MCP server + REST API + SSE
-  shared/       @pinpoint/shared     — AFS types shared between packages
+  toolbar/      @sajalmishra/markpin        — React toolbar component
+  mcp-server/   @sajalmishra/markpin-mcp   — MCP server + REST API + SSE
+  shared/       @sajalmishra/markpin-shared — AFS types shared between packages
 
 apps/
-  demo/                              — Docs site (this README's sibling)
+  demo/                                     — Docs + demo site
 ```
 
 ## Run locally
@@ -83,7 +94,7 @@ pnpm install
 pnpm dev
 
 # In a separate terminal — start the MCP server
-npx pinpoint server
+npx @sajalmishra/markpin-mcp server
 ```
 
 The demo app runs at `http://localhost:5173`. The MCP server runs at `http://localhost:4747`.
@@ -100,6 +111,7 @@ The demo app runs at `http://localhost:5173`. The MCP server runs at `http://loc
 
 - [`packages/toolbar`](packages/toolbar/README.md) — React toolbar component
 - [`packages/mcp-server`](packages/mcp-server/README.md) — MCP server with 9 tools
+- [`packages/shared`](packages/shared/README.md) — Shared types
 
 ## Contributing
 
