@@ -5,11 +5,30 @@ import CodeTabs from '../components/CodeTabs';
 import CodeBlock from '../components/CodeBlock';
 
 const toc = [
+  { id: 'packages', label: 'Packages on npm' },
   { id: 'requirements', label: 'Requirements' },
   { id: 'toolbar', label: 'Install the toolbar' },
   { id: 'mcp-server', label: 'MCP server setup' },
   { id: 'props', label: 'Props reference' },
   { id: 'next-steps', label: 'Next steps' },
+];
+
+const NPM_PACKAGES = [
+  {
+    name: '@sajalmishra/markpin',
+    url: 'https://www.npmjs.com/package/@sajalmishra/markpin',
+    description: 'React toolbar component — drop into any app',
+  },
+  {
+    name: '@sajalmishra/markpin-mcp',
+    url: 'https://www.npmjs.com/package/@sajalmishra/markpin-mcp',
+    description: 'MCP server + REST API + SSE stream',
+  },
+  {
+    name: '@sajalmishra/markpin-shared',
+    url: 'https://www.npmjs.com/package/@sajalmishra/markpin-shared',
+    description: 'Shared TypeScript types (AFS schema)',
+  },
 ];
 
 const installTabs = [
@@ -92,6 +111,26 @@ export default function Install() {
         Add Pinpoint to your React app in two steps: install the toolbar package
         and start the MCP server.
       </p>
+
+      {/* Packages on npm */}
+      <section id="packages">
+        <h2>Packages on npm</h2>
+        <div className="npm-package-list">
+          {NPM_PACKAGES.map((pkg) => (
+            <a
+              key={pkg.name}
+              href={pkg.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="npm-package-card"
+            >
+              <span className="npm-package-name">{pkg.name}</span>
+              <span className="npm-package-desc">{pkg.description}</span>
+              <span className="npm-package-arrow">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
 
       {/* Requirements */}
       <section id="requirements">
