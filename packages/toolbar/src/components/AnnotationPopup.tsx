@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import type { Annotation } from '@pinpoint/shared';
-import { AnnotationIntent, AnnotationSeverity, now } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationIntent, AnnotationSeverity, now } from '@sajalmishra/markpin-shared';
 import { C, Z, FONT, INTENT_META, SEVERITY_META } from '../theme.js';
 import { toolbarStore, type PopupConfig } from '../state/toolbarState.js';
 import { buildAnnotation } from '../core/annotationBuilder.js';

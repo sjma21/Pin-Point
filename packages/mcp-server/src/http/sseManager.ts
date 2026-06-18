@@ -1,4 +1,4 @@
-import { generateId } from '@pinpoint/shared';
+import { generateId } from '@sajalmishra/markpin-shared';
 
 interface Connection {
   readonly id: string;

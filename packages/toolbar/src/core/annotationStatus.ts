@@ -1,4 +1,4 @@
-import { AnnotationStatus } from '@pinpoint/shared';
+import { AnnotationStatus } from '@sajalmishra/markpin-shared';
 
 const TERMINAL = new Set<string>([
   AnnotationStatus.Resolved,

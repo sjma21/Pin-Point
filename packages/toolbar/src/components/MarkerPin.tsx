@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer } from 'react';
-import type { Annotation, AnnotationStatus } from '@pinpoint/shared';
+import type { Annotation, AnnotationStatus } from '@sajalmishra/markpin-shared';
 import { C, Z, FONT } from '../theme.js';
 import { toolbarStore } from '../state/toolbarState.js';
 import { INTENT_META } from '../theme.js';

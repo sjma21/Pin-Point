@@ -1,5 +1,5 @@
-import type { Annotation } from '@pinpoint/shared';
-import { AnnotationIntent, AnnotationSeverity, generateId } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationIntent, AnnotationSeverity, generateId } from '@sajalmishra/markpin-shared';
 import type { DetailLevel } from '../core/markdownSerializer.js';
 import { emit } from '../core/eventBus.js';
 import { loadAnnotations, saveAnnotations } from '../core/storageManager.js';
@@ -59,6 +59,8 @@ export interface ToolbarStateData {
 const SETTINGS_KEY = 'pp_settings_v1';
 const TOOLBAR_POS_KEY = 'pp_toolbar_pos';
 
+export const DEFAULT_ENDPOINT = 'http://localhost:4747';
+
 function defaultSettings(): ToolbarExtendedSettings {
   return {
     detailLevel: 'standard',
@@ -66,7 +68,7 @@ function defaultSettings(): ToolbarExtendedSettings {
     markerColor: '#6366f1',
     clearOnCopy: false,
     blockInteractions: true,
-    serverUrl: 'http://localhost:3141',
+    serverUrl: DEFAULT_ENDPOINT,
     defaultIntent: AnnotationIntent.Bug,
     defaultSeverity: AnnotationSeverity.Medium,
   };

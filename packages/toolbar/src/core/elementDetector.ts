@@ -1,4 +1,4 @@
-import type { BoundingBox } from '@pinpoint/shared';
+import type { BoundingBox } from '@sajalmishra/markpin-shared';
 
 export interface ComputedStyles {
   color: string;

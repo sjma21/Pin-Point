@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import type { Annotation } from '@pinpoint/shared';
-import { AnnotationStatus } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationStatus } from '@sajalmishra/markpin-shared';
 import { annotationStore } from '../store/annotationStore.js';
 import { sseManager } from '../http/sseManager.js';
 
@@ -49,7 +49,7 @@ function enrichAnnotation(ann: Annotation): Record<string, unknown> {
 }
 
 export function createMcpServer(): McpServer {
-  const server = new McpServer({ name: 'pinpoint', version: '0.4.0' });
+  const server = new McpServer({ name: 'markpin', version: '0.1.0' });
 
   // 1 ── list all sessions
   server.tool(

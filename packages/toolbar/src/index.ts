@@ -10,5 +10,5 @@ export { toolbarStore } from './state/toolbarState.js';
 export type { ToolbarStateData, ToolbarMode, ToolbarExtendedSettings } from './state/toolbarState.js';
 
 // Shared types re-exported for convenience
-export type { Annotation, Session } from '@pinpoint/shared';
-export { AnnotationIntent, AnnotationSeverity, AnnotationStatus, AnnotationKind } from '@pinpoint/shared';
+export type { Annotation, Session } from '@sajalmishra/markpin-shared';
+export { AnnotationIntent, AnnotationSeverity, AnnotationStatus, AnnotationKind } from '@sajalmishra/markpin-shared';

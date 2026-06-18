@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { stream } from 'hono/streaming';
-import type { Annotation } from '@pinpoint/shared';
-import { AnnotationStatus } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationStatus } from '@sajalmishra/markpin-shared';
 import { annotationStore } from '../store/annotationStore.js';
 import { sseManager } from './sseManager.js';
 

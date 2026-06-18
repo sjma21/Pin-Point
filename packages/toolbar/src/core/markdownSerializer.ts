@@ -1,5 +1,5 @@
-import type { Annotation } from '@pinpoint/shared';
-import { OutputFormat } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { OutputFormat } from '@sajalmishra/markpin-shared';
 
 export type DetailLevel = 'compact' | 'standard' | 'detailed' | 'forensic';
 

@@ -1,4 +1,4 @@
-import type { Annotation } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
 
 const PREFIX = 'pp_ann_';
 const EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days

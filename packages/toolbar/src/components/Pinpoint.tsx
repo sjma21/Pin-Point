@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import type { Annotation } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
 import { FONT, Z } from '../theme.js';
-import { toolbarStore } from '../state/toolbarState.js';
+import { toolbarStore, DEFAULT_ENDPOINT } from '../state/toolbarState.js';
 import { useToolbarState } from '../state/useToolbarState.js';
 import { serializeAnnotations } from '../core/markdownSerializer.js';
 import { pauseAnimations, resumeAnimations } from '../core/animationController.js';
@@ -21,6 +21,10 @@ import { SettingsPanel } from './SettingsPanel.js';
 import { ComponentPalette } from './layout/ComponentPalette.js';
 
 export interface PinpointProps {
+  /**
+   * MCP server URL. Defaults to `"http://localhost:4747"`.
+   * Configurable via `--port` flag or `PINPOINT_PORT` env var on the server.
+   */
   endpoint?: string;
   sessionId?: string;
   onAnnotationAdd?: (annotation: Annotation) => void;
@@ -57,7 +61,7 @@ async function copyToClipboard(text: string): Promise<void> {
 }
 
 export function Pinpoint({
-  endpoint,
+  endpoint = DEFAULT_ENDPOINT,
   sessionId: externalSessionId,
   onAnnotationAdd,
   onAnnotationDelete,

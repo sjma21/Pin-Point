@@ -1,4 +1,4 @@
-import type { Annotation } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
 import { toolbarStore } from '../state/toolbarState.js';
 import { isTerminalStatus } from './annotationStatus.js';
 

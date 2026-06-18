@@ -1,4 +1,4 @@
-import type { Annotation, AnnotationStatus } from '@pinpoint/shared';
+import type { Annotation, AnnotationStatus } from '@sajalmishra/markpin-shared';
 import { C, FONT } from '../theme.js';
 
 interface ThreadMessage {

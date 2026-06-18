@@ -1,4 +1,4 @@
-import type { Annotation, AnnotationTarget } from '@pinpoint/shared';
+import type { Annotation, AnnotationTarget } from '@sajalmishra/markpin-shared';
 import {
   AnnotationKind,
   AnnotationIntent,
@@ -6,7 +6,7 @@ import {
   AnnotationStatus,
   generateId,
   now,
-} from '@pinpoint/shared';
+} from '@sajalmishra/markpin-shared';
 import type { DetectedElement } from './elementDetector.js';
 import { generateSelector } from './selectorGenerator.js';
 import { traverseFiber } from './fiberTraverser.js';

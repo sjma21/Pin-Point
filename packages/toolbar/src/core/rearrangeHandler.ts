@@ -1,5 +1,5 @@
-import type { Annotation } from '@pinpoint/shared';
-import { AnnotationIntent, AnnotationKind, AnnotationSeverity, AnnotationStatus, generateId, now } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationIntent, AnnotationKind, AnnotationSeverity, AnnotationStatus, generateId, now } from '@sajalmishra/markpin-shared';
 import { toolbarStore } from '../state/toolbarState.js';
 import { httpClient } from './httpClient.js';
 import type { PageSection } from './layoutController.js';

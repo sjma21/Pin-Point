@@ -1,6 +1,6 @@
-import type { Session, Annotation } from '@pinpoint/shared';
-import { AnnotationStatus, SessionStatus } from '@pinpoint/shared';
-import { generateId, now } from '@pinpoint/shared';
+import type { Session, Annotation } from '@sajalmishra/markpin-shared';
+import { AnnotationStatus, SessionStatus } from '@sajalmishra/markpin-shared';
+import { generateId, now } from '@sajalmishra/markpin-shared';
 
 export type StoreListener = () => void;
 

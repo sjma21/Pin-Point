@@ -1,4 +1,4 @@
-import type { Annotation } from '@pinpoint/shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
 
 const SESSION_KEY = 'pp_server_session';
 
