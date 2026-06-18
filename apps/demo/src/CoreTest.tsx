@@ -35,9 +35,9 @@ import {
   // Event bus
   subscribe,
   emit,
-} from '@pinpoint/toolbar';
-import { AnnotationIntent, AnnotationSeverity, generateId } from '@pinpoint/shared';
-import type { Annotation } from '@pinpoint/shared';
+} from '@sajalmishra/markpin';
+import { AnnotationIntent, AnnotationSeverity, generateId } from '@sajalmishra/markpin-shared';
+import type { Annotation } from '@sajalmishra/markpin-shared';
 
 const SESSION_ID = generateId('sess');
 
@@ -329,7 +329,7 @@ export default function CoreTest() {
       </h2>
       <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
         Open DevTools console for full output. All modules imported from{' '}
-        <code>@pinpoint/toolbar</code>.
+        <code>@sajalmishra/markpin</code>.
       </p>
 
       {/* Status chips */}

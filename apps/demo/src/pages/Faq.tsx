@@ -16,7 +16,7 @@ const toc = [
 ];
 
 const nextjsCode = `const Pinpoint = dynamic(
-  () => import('@pinpoint/toolbar').then(m => m.Pinpoint),
+  () => import('@sajalmishra/markpin').then(m => m.Pinpoint),
   { ssr: false }
 );`;
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import PinpointLogo from '../components/PinpointLogo';
 
 interface StatCard {
   label: string;
@@ -92,7 +93,7 @@ function BrowserMockup() {
 
         {/* Floating Pinpoint toolbar */}
         <div className="fake-toolbar">
-          <span className="fake-toolbar-logo">📍 Pinpoint</span>
+          <span className="fake-toolbar-logo"><PinpointLogo size={16} /> Pinpoint</span>
           <span className="fake-toolbar-badge">2</span>
           <div className="fake-toolbar-btns">
             <span className="fake-toolbar-capture">Capturing</span>

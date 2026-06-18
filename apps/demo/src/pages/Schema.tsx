@@ -151,7 +151,7 @@ export default function Schema() {
         <p>
           AFS is the data format Pinpoint uses internally and exposes via MCP
           and REST. It is fully typed in TypeScript and exported from{' '}
-          <code>@pinpoint/shared</code>. All MCP tools return annotations in AFS
+          <code>@sajalmishra/markpin-shared</code>. All MCP tools return annotations in AFS
           format, so your agent always works with the same consistent structure
           regardless of whether it calls a tool or hits the REST API directly.
         </p>

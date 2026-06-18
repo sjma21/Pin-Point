@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PinpointLogo from '../components/PinpointLogo';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,7 +24,8 @@ export default function Navbar() {
     <nav className={`nav${isScrolled ? ' scrolled' : ''}`}>
       <div className="nav-inner">
         <a href="/" className="nav-logo">
-          📍 Pinpoint
+          <PinpointLogo size={24} />
+          Pinpoint
         </a>
 
         <div className="nav-links">
@@ -36,7 +38,7 @@ export default function Navbar() {
           <a href="#demo" className="nav-link">
             Demo
           </a>
-          <a href="#install" className="nav-link">
+          <a href="/docs" className="nav-link">
             Docs
           </a>
         </div>
@@ -76,7 +78,7 @@ export default function Navbar() {
           <a href="#demo" className="nav-link" onClick={closeMobile}>
             Demo
           </a>
-          <a href="#install" className="nav-link" onClick={closeMobile}>
+          <a href="/docs" className="nav-link" onClick={closeMobile}>
             Docs
           </a>
           <a

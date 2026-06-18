@@ -1,3 +1,4 @@
+import PinpointLogo from '../components/PinpointLogo';
 
 interface FooterLink {
   label: string;
@@ -23,7 +24,10 @@ export default function Footer() {
         <div className="footer-top">
           {/* Left — brand */}
           <div className="footer-brand">
-            <div className="footer-logo">📍 Pinpoint</div>
+            <div className="footer-logo">
+              <PinpointLogo size={22} />
+              Pinpoint
+            </div>
             <p className="footer-tagline">
               Visual feedback for AI coding agents.
             </p>

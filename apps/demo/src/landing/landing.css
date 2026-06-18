@@ -33,6 +33,7 @@
 .landing {
   all: unset;
   display: block;
+  width: 100%;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.7;
@@ -215,6 +216,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
+  background: var(--bg-dark);
   transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -244,6 +246,8 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+  line-height: 1;
+  overflow: hidden;
 }
 
 .landing .nav-logo:hover {
@@ -339,7 +343,7 @@
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 100% 100%, 60px 60px, 60px 60px;
-  background-position: top center, 0 0, 0 0;
+  background-position: top center, 30px 44px, 30px 44px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -48,7 +48,7 @@ export default function InstallSection() {
               <div>
                 <span className="prompt">$ </span>
                 <span>npm install </span>
-                <span className="string">@pinpoint/toolbar</span>
+                <span className="string">@sajalmishra/markpin</span>
               </div>
               <div style={{ height: '16px' }} />
               <div className="comment">{'// Import the component'}</div>
@@ -59,7 +59,7 @@ export default function InstallSection() {
                 {' } '}
                 <span className="keyword">from</span>
                 {' '}
-                <span className="string">'@pinpoint/toolbar'</span>
+                <span className="string">'@sajalmishra/markpin'</span>
                 {';'}
               </div>
               <div style={{ height: '16px' }} />
@@ -95,7 +95,7 @@ export default function InstallSection() {
             <div className="install-code-block">
               <div>
                 <span className="prompt">$ </span>
-                <span>npx pinpoint server</span>
+                <span>npx @sajalmishra/markpin-mcp server</span>
               </div>
               <div style={{ height: '16px' }} />
               <div>

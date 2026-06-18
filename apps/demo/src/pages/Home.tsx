@@ -13,24 +13,25 @@ const toc = [
 ];
 
 const installTabs = [
-  { label: 'npm', code: 'npm install @pinpoint/toolbar' },
-  { label: 'pnpm', code: 'pnpm add @pinpoint/toolbar' },
-  { label: 'yarn', code: 'yarn add @pinpoint/toolbar' },
+  { label: 'npm', code: 'npm install @sajalmishra/markpin -D' },
+  { label: 'pnpm', code: 'pnpm add @sajalmishra/markpin -D' },
+  { label: 'yarn', code: 'yarn add @sajalmishra/markpin --dev' },
 ];
 
-const usageCode = `import { Pinpoint } from '@pinpoint/toolbar';
+const usageCode = `import { Pinpoint } from '@sajalmishra/markpin';
 
 export function App() {
   return (
     <>
       <YourApp />
-      <Pinpoint endpoint="http://localhost:4747" />
+      {import.meta.env.DEV && <Pinpoint />}
     </>
   );
 }`;
 
-const serverCode = `npx pinpoint server
-# MCP server running at http://localhost:4747`;
+const serverCode = `npx @sajalmishra/markpin-mcp server
+# [pinpoint] HTTP  → http://localhost:4747
+# [pinpoint] Ready — annotate in browser, Claude fixes it.`;
 
 export default function Home() {
   return (
@@ -92,7 +93,7 @@ export default function Home() {
           </li>
           <li>
             <strong>Start</strong> your dev server and the Pinpoint MCP server (
-            <code>npx pinpoint server</code>)
+            <code>npx @sajalmishra/markpin-mcp server</code>)
           </li>
           <li>
             <strong>Click Capture</strong> in the Pinpoint toolbar to enter

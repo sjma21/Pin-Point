@@ -10,13 +10,13 @@ const toc = [
   { id: 'tool-reference', label: 'Tool reference' },
 ];
 
-const serverStartCode = `npx pinpoint server`;
+const serverStartCode = `npx @sajalmishra/markpin-mcp server`;
 
 const mcpConfigCode = `{
   "mcpServers": {
-    "pinpoint": {
+    "markpin": {
       "command": "npx",
-      "args": ["pinpoint", "server"]
+      "args": ["@sajalmishra/markpin-mcp", "server"]
     }
   }
 }`;

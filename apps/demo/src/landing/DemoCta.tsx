@@ -1,4 +1,5 @@
 import { useEffect, useRef, RefObject } from 'react';
+import PinpointLogo from '../components/PinpointLogo';
 
 function useInView(ref: RefObject<Element>): void {
   useEffect(() => {
@@ -91,7 +92,7 @@ function DemoPreview() {
             fontWeight: 600,
             boxShadow: '0 4px 16px rgba(99,102,241,0.4)',
           }}>
-            📍 Pinpoint
+            <PinpointLogo size={16} /> Pinpoint
             <span style={{
               background: 'rgba(255,255,255,0.2)',
               borderRadius: '50%',

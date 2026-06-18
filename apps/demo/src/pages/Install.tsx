@@ -13,13 +13,13 @@ const toc = [
 ];
 
 const installTabs = [
-  { label: 'npm', code: 'npm install @pinpoint/toolbar' },
-  { label: 'pnpm', code: 'pnpm add @pinpoint/toolbar' },
-  { label: 'yarn', code: 'yarn add @pinpoint/toolbar' },
+  { label: 'npm', code: 'npm install @sajalmishra/markpin -D' },
+  { label: 'pnpm', code: 'pnpm add @sajalmishra/markpin -D' },
+  { label: 'yarn', code: 'yarn add @sajalmishra/markpin --dev' },
 ];
 
 const appCode = `// src/App.tsx
-import { Pinpoint } from '@pinpoint/toolbar';
+import { Pinpoint } from '@sajalmishra/markpin';
 
 export function App() {
   return (
@@ -39,7 +39,7 @@ const nextjsCode = `// app/layout.tsx
 import dynamic from 'next/dynamic';
 
 const Pinpoint = dynamic(
-  () => import('@pinpoint/toolbar').then(m => m.Pinpoint),
+  () => import('@sajalmishra/markpin').then(m => m.Pinpoint),
   { ssr: false }
 );
 
@@ -56,25 +56,32 @@ export default function RootLayout({ children }) {
   );
 }`;
 
-const serverStartCode = `npx pinpoint server
-# ✓ Pinpoint MCP server running at http://localhost:4747
-# ✓ MCP endpoint: http://localhost:4747/mcp`;
+const serverStartCode = `npx @sajalmishra/markpin-mcp server
+# [pinpoint] HTTP  → http://localhost:4747
+# [pinpoint] MCP   → stdio
+# [pinpoint] Ready — annotate in browser, Claude fixes it.`;
 
 const mcpConfigCode = `{
   "mcpServers": {
-    "pinpoint": {
+    "markpin": {
       "command": "npx",
-      "args": ["pinpoint", "server"],
+      "args": ["@sajalmishra/markpin-mcp", "server"],
       "env": {}
     }
   }
 }`;
 
 const persistentServerCode = `# Install globally
-npm install -g @pinpoint/mcp-server
+npm install -g @sajalmishra/markpin-mcp
 
-# Start with a fixed port
-pinpoint server --port 4747`;
+# Start with default port (4747)
+markpin-mcp server
+
+# Start with a custom port
+markpin-mcp server --port 8080
+
+# Or use an environment variable
+PINPOINT_PORT=8080 markpin-mcp server`;
 
 export default function Install() {
   return (
@@ -150,11 +157,18 @@ export default function Install() {
         <CodeBlock language="json" code={mcpConfigCode} />
         <p>
           Add this to your <code>.claude/settings.json</code> or run{' '}
-          <code>pinpoint init</code> to configure automatically.
+          <code>markpin-mcp init</code> to configure automatically.
         </p>
 
         <h3>Persistent server (recommended)</h3>
         <CodeBlock language="bash" code={persistentServerCode} />
+
+        <Callout type="info">
+          The MCP server runs locally on your machine. The default port is <code>4747</code>.
+          You can change it with the <code>--port</code> flag or the <code>PINPOINT_PORT</code> environment variable.
+          Example: <code>markpin-mcp server --port 8080</code> or <code>PINPOINT_PORT=8080 markpin-mcp server</code>.
+          When using a custom port, pass it to the toolbar: <code>&lt;Pinpoint endpoint="http://localhost:8080" /&gt;</code>.
+        </Callout>
       </section>
 
       {/* Props reference */}
@@ -173,8 +187,8 @@ export default function Install() {
             <tr>
               <td><code className="prop-name">endpoint</code></td>
               <td><code className="prop-type">string</code></td>
-              <td><span className="prop-default">—</span></td>
-              <td>MCP server URL. Required for agent sync.</td>
+              <td><code className="prop-default">"http://localhost:4747"</code></td>
+              <td>MCP server URL. Defaults to the standard port. Override if you changed the port.</td>
             </tr>
             <tr>
               <td><code className="prop-name">sessionId</code></td>
