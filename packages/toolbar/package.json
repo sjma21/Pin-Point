@@ -1,6 +1,6 @@
 {
   "name": "@sajalmishra/markpin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Visual feedback tool for AI coding agents — click any element to annotate it",
   "keywords": ["ai", "agents", "feedback", "annotations", "mcp", "claude", "cursor", "developer-tools", "react"],
   "type": "module",
