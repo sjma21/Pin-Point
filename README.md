@@ -109,9 +109,11 @@ The demo app runs at `http://localhost:5173`. The MCP server runs at `http://loc
 
 ## Packages
 
-- [`packages/toolbar`](packages/toolbar/README.md) — React toolbar component
-- [`packages/mcp-server`](packages/mcp-server/README.md) — MCP server with 9 tools
-- [`packages/shared`](packages/shared/README.md) — Shared types
+| Package | npm | Description |
+|---------|-----|-------------|
+| `@sajalmishra/markpin` | [npmjs.com/package/@sajalmishra/markpin](https://www.npmjs.com/package/@sajalmishra/markpin) | React toolbar component |
+| `@sajalmishra/markpin-mcp` | [npmjs.com/package/@sajalmishra/markpin-mcp](https://www.npmjs.com/package/@sajalmishra/markpin-mcp) | MCP server with 9 tools |
+| `@sajalmishra/markpin-shared` | [npmjs.com/package/@sajalmishra/markpin-shared](https://www.npmjs.com/package/@sajalmishra/markpin-shared) | Shared TypeScript types |
 
 ## Contributing
 
