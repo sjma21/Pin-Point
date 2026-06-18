@@ -48,7 +48,7 @@ export default function InstallSection() {
               <div>
                 <span className="prompt">$ </span>
                 <span>npm install </span>
-                <span className="string">@sajalmishra/markpin</span>
+                <a href="https://www.npmjs.com/package/@sajalmishra/markpin" target="_blank" rel="noopener noreferrer" className="string" style={{ textDecoration: 'underline', textUnderlineOffset: '2px' }}>@sajalmishra/markpin</a>
               </div>
               <div style={{ height: '16px' }} />
               <div className="comment">{'// Import the component'}</div>
@@ -59,7 +59,7 @@ export default function InstallSection() {
                 {' } '}
                 <span className="keyword">from</span>
                 {' '}
-                <span className="string">'@sajalmishra/markpin'</span>
+                <a href="https://www.npmjs.com/package/@sajalmishra/markpin" target="_blank" rel="noopener noreferrer" className="string" style={{ textDecoration: 'underline', textUnderlineOffset: '2px' }}>'@sajalmishra/markpin'</a>
                 {';'}
               </div>
               <div style={{ height: '16px' }} />
@@ -95,7 +95,7 @@ export default function InstallSection() {
             <div className="install-code-block">
               <div>
                 <span className="prompt">$ </span>
-                <span>npx @sajalmishra/markpin-mcp server</span>
+                <span>npx </span><a href="https://www.npmjs.com/package/@sajalmishra/markpin-mcp" target="_blank" rel="noopener noreferrer" className="string" style={{ textDecoration: 'underline', textUnderlineOffset: '2px' }}>@sajalmishra/markpin-mcp</a><span> server</span>
               </div>
               <div style={{ height: '16px' }} />
               <div>
