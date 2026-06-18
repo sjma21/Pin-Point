@@ -1,27 +1,43 @@
 {
-  "name": "@pinpoint/mcp-server",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@sajalmishra/markpin-mcp",
+  "version": "0.1.1",
+  "description": "MCP server for Pinpoint visual feedback tool",
+  "keywords": ["mcp", "ai-agents", "claude-code", "annotations", "developer-tools"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinpoint-dev/pinpoint.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://github.com/pinpoint-dev/pinpoint#readme",
+  "bugs": {
+    "url": "https://github.com/pinpoint-dev/pinpoint/issues"
+  },
   "type": "module",
-  "types": "./dist/cli.d.ts",
-  "main": "./dist/cli.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "pinpoint": "./dist/cli.js"
+    "markpin-mcp": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsup src/cli.ts src/index.ts --format esm --dts",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
     "dev": "tsx src/cli.ts server",
-    "start": "node dist/cli.js server"
+    "start": "node dist/cli.js server",
+    "prepublishOnly": "pnpm build && pnpm typecheck"
   },
   "dependencies": {
     "@hono/node-server": "^2.0.5",
     "@modelcontextprotocol/sdk": "^1.10.2",
-    "@pinpoint/shared": "workspace:*",
     "hono": "^4.4.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@sajalmishra/markpin-shared": "workspace:*",
     "@types/node": "^20.14.2",
     "tsup": "^8.1.0",
     "tsx": "^4.15.5",

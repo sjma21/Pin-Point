@@ -1,15 +1,12 @@
 {
-  "name": "pinpoint",
+  "name": "markpin",
   "version": "0.0.1",
   "private": true,
-  "bin": {
-    "pinpoint": "./packages/mcp-server/dist/cli.js"
-  },
   "dependencies": {
-    "@pinpoint/mcp-server": "workspace:*"
+    "@sajalmishra/markpin-mcp": "workspace:*"
   },
   "scripts": {
-    "dev": "pnpm --filter @pinpoint/demo dev",
+    "dev": "pnpm --filter @sajalmishra/markpin-demo dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint"

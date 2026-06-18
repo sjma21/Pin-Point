@@ -14,8 +14,8 @@ export default defineConfig({
   resolve: {
     alias: {
       // Resolve workspace packages from TypeScript source — no pre-build needed
-      '@pinpoint/toolbar': resolve(__dirname, '../../packages/toolbar/src/index.ts'),
-      '@pinpoint/shared': resolve(__dirname, '../../packages/shared/src/index.ts'),
+      '@sajalmishra/markpin': resolve(__dirname, '../../packages/toolbar/src/index.ts'),
+      '@sajalmishra/markpin-shared': resolve(__dirname, '../../packages/shared/src/index.ts'),
     },
   },
 });

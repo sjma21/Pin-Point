@@ -1,30 +1,42 @@
 {
-  "name": "@pinpoint/toolbar",
-  "version": "0.0.1",
-  "private": true,
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "name": "@sajalmishra/markpin",
+  "version": "0.1.0",
+  "description": "Visual feedback tool for AI coding agents — click any element to annotate it",
+  "keywords": ["ai", "agents", "feedback", "annotations", "mcp", "claude", "cursor", "developer-tools", "react"],
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinpoint-dev/pinpoint.git",
+    "directory": "packages/toolbar"
+  },
+  "homepage": "https://github.com/pinpoint-dev/pinpoint#readme",
+  "bugs": {
+    "url": "https://github.com/pinpoint-dev/pinpoint/issues"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
+  "files": ["dist"],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react --external react-dom",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --external react --external react-dom --watch"
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm build && pnpm typecheck"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
-  "dependencies": {
-    "@pinpoint/shared": "workspace:*"
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
   },
   "devDependencies": {
+    "@sajalmishra/markpin-shared": "workspace:*",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "tsup": "^8.1.0",

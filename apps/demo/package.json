@@ -1,5 +1,5 @@
 {
-  "name": "@pinpoint/demo",
+  "name": "@sajalmishra/markpin-demo",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@pinpoint/shared": "workspace:*",
-    "@pinpoint/toolbar": "workspace:*",
+    "@sajalmishra/markpin-shared": "workspace:*",
+    "@sajalmishra/markpin": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.17.0"

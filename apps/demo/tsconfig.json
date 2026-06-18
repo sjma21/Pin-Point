@@ -17,8 +17,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@pinpoint/toolbar": ["../../packages/toolbar/src/index.ts"],
-      "@pinpoint/shared": ["../../packages/shared/src/index.ts"]
+      "@sajalmishra/markpin": ["../../packages/toolbar/src/index.ts"],
+      "@sajalmishra/markpin-shared": ["../../packages/shared/src/index.ts"]
     }
   },
   "include": ["src"],
